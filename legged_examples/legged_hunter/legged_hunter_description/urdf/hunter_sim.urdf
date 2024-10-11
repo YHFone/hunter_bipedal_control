@@ -1,0 +1,936 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="pai_cl_12">
+
+	<gazebo>
+		<plugin name="gazebo_ros_control" filename="libhunter_bipedal_hw_sim.so">
+		<robotNamespace>/</robotNamespace>
+		<robotParam>legged_robot_description</robotParam>
+		<robotSimType>legged_gazebo/LeggedHWSim</robotSimType>
+		</plugin>
+	</gazebo>
+
+  <gazebo>
+    <plugin filename="libgazebo_ros_p3d.so" name="p3d_base_controller">
+      <alwaysOn>true</alwaysOn>
+      <updateRate>500.0</updateRate>
+      <bodyName>base_link</bodyName>
+      <topicName>ground_truth/state</topicName>
+      <gaussianNoise>0</gaussianNoise>
+      <frameName>world</frameName>
+      <xyzOffsets>0 0 0</xyzOffsets>
+      <rpyOffsets>0 0 0</rpyOffsets>
+    </plugin>
+  </gazebo>
+
+	<link name="base_link">
+		<inertial>
+			<origin xyz="0.00080912 -8.753E-05 0.03920549" rpy="0 0 0" />
+			<mass value="1.82" />
+			<inertia ixx="0.00829787" ixy="-1.181E-05" ixz="-0.00019642" iyy="0.00916809" iyz="1.354E-05" izz="0.00411404" />
+		</inertial>
+		<visual>
+			<origin xyz="0 0 0.0" rpy="0 0 0" />
+			<geometry>
+				<!-- <box size="0.1 0.1 0.1" /> -->
+				<mesh filename="package://legged_hunter_description/meshes/base_link.stl" />
+			</geometry>
+			<material name="">
+				<color rgba="0.79216 0.81961 0.93333 1" />
+			</material>
+		</visual>
+		<collision>
+			<origin xyz="0 0 0.08" rpy="0 0 0" />
+			<geometry>
+				<box size="0.1 0.1 0.1" />
+			</geometry>
+		</collision>
+	</link>
+
+  	<joint name="imu_joint" type="fixed">
+      <origin rpy="0. 0. 0." xyz="0. 0. 0"/>
+      <parent link="base_link"/>
+      <child link="imu_link"/>
+    </joint>
+    <!-- Imu link -->
+    <link name="imu_link">
+      <inertial>
+        <mass value="0.01"/>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
+      </inertial>
+      <visual>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <geometry>
+          <box size="0.015 0.015 0.004"/>
+        </geometry>
+      </visual>
+      <material name="orange">
+        <color rgba="255 108 10 255"/>
+      </material>
+    </link>
+    <gazebo reference="imu_joint">
+      <disableFixedJointLumping>true</disableFixedJointLumping>
+    </gazebo>	
+
+  <!-- ************************************************************ -->
+  <!-- ************************ Right Leg ************************** -->
+  <!-- ************************************************************ -->	
+
+	<link name="leg_r1_link">
+		<inertial>
+			<origin xyz="0.0010765 -0.030923 -0.00028479" rpy="0 0 0" />
+			<mass value="0.37475" />
+			<inertia ixx="0.00018843" ixy="-7E-07" ixz="-7E-07" iyy="0.00019327" iyz="1.72E-06" izz="0.00020355" />
+		</inertial>
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<!-- <box size="0.001 0.001 0.001" /> -->
+				<mesh filename="package://legged_hunter_description/meshes/r_hip_pitch_link.stl" />
+			</geometry>
+			<material name="">
+				<color rgba="0.79216 0.81961 0.93333 1" />
+			</material>
+		</visual>
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<box size="0.001 0.001 0.001" />
+				<!-- <mesh filename="package://legged_hunter_description/meshes/r_hip_pitch_link.stl" /> -->
+			</geometry>
+		</collision>
+	</link>
+	<joint name="leg_r1_joint" type="revolute">
+		<origin xyz="-0.0028186 -0.0482 -0.031" rpy="0 0 0" />
+		<parent link="base_link" />
+		<child link="leg_r1_link" />
+		<axis xyz="0 1 0" />
+		<limit lower="-1.5" upper="1.5" effort="21" velocity="21" />
+	</joint>
+
+	<link name="leg_r2_link">
+		<inertial>
+			<origin xyz="-0.025798 0.00024695 -0.059965" rpy="0 0 0" />
+			<mass value="0.41506" />
+			<inertia ixx="0.00037621" ixy="1.65E-06" ixz="3.105E-05" iyy="0.0004423" iyz="4E-07" izz="0.00024588" />
+		</inertial>
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<!-- <box size="0.001 0.001 0.001" /> -->
+				<mesh filename="package://legged_hunter_description/meshes/r_hip_roll_link.stl" />
+			</geometry>
+			<material name="">
+				<color rgba="0.79216 0.81961 0.93333 1" />
+			</material>
+		</visual>
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<!-- <mesh filename="package://legged_hunter_description/meshes/r_hip_roll_link.stl" /> -->
+				<box size="0.001 0.001 0.001" />
+			</geometry>
+		</collision>
+	</link>
+	<joint name="leg_r2_joint" type="revolute">
+		<origin xyz="0.0245 -0.032 0" rpy="0 0 0" />
+		<parent link="leg_r1_link" />
+		<child link="leg_r2_link" />
+		<axis xyz="1 0 0" />
+		<limit lower="-1.5" upper="1.5" effort="21" velocity="21" />
+	</joint>
+
+	<link name="leg_r3_link">
+		<inertial>
+			<origin xyz="0 0.00287888 -0.02541557" rpy="0 0 0" />
+			<mass value="0.12098061" />
+			<inertia ixx="0.00013404" ixy="0" ixz="0" iyy="6.442E-05" iyz="7.23E-06" izz="9.875E-05" />
+		</inertial>
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<!-- <box size="0.001 0.001 0.001" /> -->
+				<mesh filename="package://legged_hunter_description/meshes/r_thigh_link.stl" />
+			</geometry>
+			<material name="">
+				<color rgba="0.89804 0.91765 0.92941 1" />
+			</material>
+		</visual>
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<box size="0.001 0.001 0.001" />
+				<!-- <mesh filename="package://legged_hunter_description/meshes/r_thigh_link.stl" /> -->
+			</geometry>
+		</collision>
+	</link>
+	<joint name="leg_r3_joint" type="revolute">
+		<origin xyz="-0.0245 0 -0.0935" rpy="0 0 0" />
+		<parent link="leg_r2_link" />
+		<child link="leg_r3_link" />
+		<axis xyz="0 0 1" />
+		<limit lower="-1.5" upper="1.5" effort="21" velocity="21" />
+	</joint>
+
+	<link name="leg_r4_link">
+		<inertial>
+			<origin xyz="4.686E-05 0.02435698 -0.06983241" rpy="0 0 0" />
+			<mass value="0.7601909" />
+			<inertia ixx="0.00325687" ixy="-9E-08" ixz="8.91E-06" iyy="0.00327684" iyz="6.4E-07" izz="0.00031685" />
+		</inertial>
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<!-- <box size="0.001 0.001 0.001" /> -->
+				<mesh filename="package://legged_hunter_description/meshes/r_calf_link.stl" />
+			</geometry>
+			<material name="">
+				<color rgba="0.79216 0.81961 0.93333 1" />
+			</material>
+		</visual>
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<box size="0.001 0.001 0.001" />
+				<!-- <mesh filename="package://legged_hunter_description/meshes/r_calf_link.stl" /> -->
+			</geometry>
+		</collision>
+	</link>
+	<joint name="leg_r4_joint" type="revolute">
+		<origin xyz="0 -0.0275 -0.046" rpy="0 0 0" />
+		<parent link="leg_r3_link" />
+		<child link="leg_r4_link" />
+		<axis xyz="0 1 0" />
+		<limit lower="-1.0" upper="3.0" effort="21" velocity="21" />
+	</joint>
+
+	<link name="leg_r5_link">
+		<inertial>
+			<origin xyz="0.02577677 0.0285458 0" rpy="0 0 0" />
+			<mass value="0.1322312" />
+			<inertia ixx="9.848E-05" ixy="3.56E-06" ixz="0" iyy="7.022E-05" iyz="0" izz="0.00013716" />
+		</inertial>
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<!-- <box size="0.001 0.001 0.001" /> -->
+				<mesh filename="package://legged_hunter_description/meshes/r_ankle_pitch_link.stl" />
+			</geometry>
+			<material name="">
+				<color rgba="0.89804 0.91765 0.92941 1" />
+			</material>
+		</visual>
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<box size="0.001 0.001 0.001" />
+				<!-- <mesh filename="package://legged_hunter_description/meshes/r_ankle_pitch_link.stl" /> -->
+			</geometry>
+		</collision>
+	</link>
+	<joint name="leg_r5_joint" type="revolute">
+		<origin xyz="0 0 -0.14" rpy="0 0 0" />
+		<parent link="leg_r4_link" />
+		<child link="leg_r5_link" />
+		<axis xyz="0 1 0" />
+		<limit lower="-1.0" upper="1.0" effort="21" velocity="21" />
+	</joint>
+
+	<link name="r_ankle_roll_link">
+		<inertial>
+			<origin xyz="0.012583 0.00017854 -0.016891" rpy="0 0 0" />
+			<mass value="0.58347" />
+			<inertia ixx="0.00052164" ixy="-1.83E-06" ixz="-0.00017071" iyy="0.00089826" iyz="-1E-08" izz="0.00070959" />
+		</inertial>
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<mesh filename="package://legged_hunter_description/meshes/r_ankle_roll_link.stl" />
+			</geometry>
+			<material name="">
+				<color rgba="0.79216 0.81961 0.93333 1" />
+			</material>
+		</visual>
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+        <box size="0.001 0.001 0.001" />
+				<!-- <mesh filename="package://legged_hunter_description/meshes/r_ankle_roll_link.stl" /> -->
+			</geometry>
+		</collision>
+	</link>
+	<joint name="leg_r6_joint" type="revolute">
+		<origin xyz="0.051 0.0275 0" rpy="0 0 0" />
+		<parent link="leg_r5_link" />
+		<child link="r_ankle_roll_link" />
+		<axis xyz="1 0 0" />
+		<limit lower="-1.0" upper="1.0" effort="21" velocity="21" />
+	</joint>
+
+  <joint name="leg_r5_fixed_1" type="fixed">
+    <origin xyz="0.05 0.02 -0.0400" rpy="0 0 0" />
+    <parent link="r_ankle_roll_link" />
+    <child link="leg_r_f1_link" />
+  </joint>
+  <link name="leg_r_f1_link">
+    <inertial>
+      <mass value="0.01" />
+      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001" />
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.001"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.001"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="leg_r5_fixed_2" type="fixed">
+    <origin xyz="0.05 -0.02 -0.0400" rpy="0 0 0" />
+    <parent link="r_ankle_roll_link" />
+    <child link="leg_r_f2_link" />
+  </joint>
+  <link name="leg_r_f2_link">
+    <inertial>
+      <mass value="0.01" />
+      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001" />
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.001"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.001"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="leg_r5_fixed_3" type="fixed">
+    <origin xyz="-0.07 0.02 -0.0400" rpy="0 0 0" />
+    <parent link="r_ankle_roll_link" />
+    <child link="leg_r_f3_link" />
+  </joint>
+  <link name="leg_r_f3_link">
+    <inertial>
+      <mass value="0.01" />
+      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001" />
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.001"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.001"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="leg_r5_fixed_4" type="fixed">
+    <origin xyz="-0.070 -0.02 -0.0400" rpy="0 0 0" />
+    <parent link="r_ankle_roll_link" />
+    <child link="leg_r_f4_link" />
+  </joint>
+  <link name="leg_r_f4_link">
+    <inertial>
+      <mass value="0.01" />
+      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001" />
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.001"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.001"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <gazebo reference="leg_r1_link">
+    <mu1>0.6</mu1>
+    <mu2>0.6</mu2>
+    <self_collide>1</self_collide>
+  </gazebo>
+  <gazebo reference="leg_r2_link">
+    <mu1>0.6</mu1>
+    <mu2>0.6</mu2>
+    <self_collide>1</self_collide>
+  </gazebo>
+  <gazebo reference="leg_r3_link">
+    <mu1>0.6</mu1>
+    <mu2>0.6</mu2>
+    <self_collide>1</self_collide>
+  </gazebo>
+  <gazebo reference="leg_r4_link">
+    <mu1>0.6</mu1>
+    <mu2>0.6</mu2>
+    <self_collide>1</self_collide>
+  </gazebo>
+  <gazebo reference="leg_r5_link">
+    <mu1>0.6</mu1>
+    <mu2>0.6</mu2>
+    <self_collide>1</self_collide>
+  </gazebo>
+  <gazebo reference="r_ankle_roll_link">
+    <mu1>0.6</mu1>
+    <mu2>0.6</mu2>
+    <self_collide>1</self_collide>
+  </gazebo>
+  <gazebo reference="leg_r_f1_link">
+    <mu1>1.5</mu1>
+    <mu2>1.5</mu2>
+    <self_collide>1</self_collide>
+    <kp value="1000000.0"/>
+    <kd value="100.0"/>
+    <maxVel>1.0</maxVel>
+    <minDepth>0.00</minDepth>
+  </gazebo>
+  <gazebo reference="leg_r_f2_link">
+    <mu1>1.5</mu1>
+    <mu2>1.5</mu2>
+    <self_collide>1</self_collide>
+    <kp value="1000000.0"/>
+    <kd value="100.0"/>
+    <maxVel>1.0</maxVel>
+    <minDepth>0.00</minDepth>
+  </gazebo>
+  <gazebo reference="leg_r_f3_link">
+    <mu1>1.5</mu1>
+    <mu2>1.5</mu2>
+    <self_collide>1</self_collide>
+    <kp value="1000000.0"/>
+    <kd value="100.0"/>
+    <maxVel>1.0</maxVel>
+    <minDepth>0.00</minDepth>
+  </gazebo>
+  <gazebo reference="leg_r_f4_link">
+    <mu1>1.5</mu1>
+    <mu2>1.5</mu2>
+    <self_collide>1</self_collide>
+    <kp value="1000000.0"/>
+    <kd value="100.0"/>
+    <maxVel>1.0</maxVel>
+    <minDepth>0.00</minDepth>
+  </gazebo>
+
+  <transmission name="leg_r1_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="leg_r1_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="leg_r1_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+      	  <maxVelocity>1.484</maxVelocity><!-- 85rpm -->
+	<maxEffort>36.0</maxEffort><!-- 36Nm -->
+    </actuator>
+  </transmission>
+
+  <transmission name="leg_r2_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="leg_r2_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="leg_r2_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+      	  <maxVelocity>2.6545</maxVelocity><!-- 160rpm -->
+	  <maxEffort>94.0</maxEffort><!-- 94Nm -->
+    </actuator>
+  </transmission>
+
+  <transmission name="leg_r3_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="leg_r3_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="leg_r3_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+      	  <maxVelocity>2.6545</maxVelocity><!-- 160rpm -->
+	  <maxEffort>94.0</maxEffort><!-- 94Nm -->
+    </actuator>
+  </transmission>
+
+  <transmission name="leg_r4_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="leg_r4_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="leg_r4_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+      	  <maxVelocity>1.484</maxVelocity><!-- 85rpm -->
+	<maxEffort>36.0</maxEffort><!-- 36Nm -->
+    </actuator>
+  </transmission>
+
+  <transmission name="leg_r5_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="leg_r5_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="leg_r5_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="leg_r6_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="leg_r6_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="leg_r6_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+  <!-- ************************************************************ -->
+  <!-- ************************ Left Leg ************************** -->
+  <!-- ************************************************************ -->
+
+
+	<link name="leg_l1_link">
+		<inertial>
+			<origin xyz="0.0010765 0.030923 -0.00028479" rpy="0 0 0" />
+			<mass value="0.37475" />
+			<inertia ixx="0.00018843" ixy="-7E-07" ixz="-7E-07" iyy="0.00019327" iyz="1.72E-06" izz="0.00020355" />
+		</inertial>
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<mesh filename="package://legged_hunter_description/meshes/l_hip_pitch_link.stl" />
+			</geometry>
+			<material name="">
+				<color rgba="0.89804 0.91765 0.92941 1" />
+			</material>
+		</visual>
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<box size="0.001 0.001 0.001" />
+				<!-- <mesh filename="package://legged_hunter_description/meshes/l_hip_pitch_link.stl" /> -->
+			</geometry>
+		</collision>
+	</link>
+	<joint name="leg_l1_joint" type="revolute">
+		<origin xyz="-0.0028186 0.0482 -0.031" rpy="0 0 0" />
+		<parent link="base_link" />
+		<child link="leg_l1_link" />
+		<axis xyz="0 1 0" />
+		<limit lower="-1.5" upper="1.5" effort="21" velocity="21" />
+	</joint>
+
+	<link name="leg_l2_link">
+		<inertial>
+			<origin xyz="-0.025798 0.00024695 -0.059965" rpy="0 0 0" />
+			<mass value="0.41506" />
+			<inertia ixx="0.00037621" ixy="1.65E-06" ixz="3.105E-05" iyy="0.0004423" iyz="4E-07" izz="0.00024588" />
+		</inertial>
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<mesh filename="package://legged_hunter_description/meshes/l_hip_roll_link.stl" />
+			</geometry>
+			<material name="">
+				<color rgba="0.79216 0.81961 0.93333 1" />
+			</material>
+		</visual>
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<box size="0.001 0.001 0.001" />
+				<!-- <mesh filename="package://legged_hunter_description/meshes/l_hip_roll_link.stl" /> -->
+			</geometry>
+		</collision>
+	</link>
+	<joint name="leg_l2_joint" type="revolute">
+		<origin xyz="0.0245 0.032 0" rpy="0 0 0" />
+		<parent link="leg_l1_link" />
+		<child link="leg_l2_link" />
+		<axis xyz="1 0 0" />
+		<limit lower="-1.5" upper="1.5" effort="21" velocity="21" />
+	</joint>
+
+	<link name="leg_l3_link">
+		<inertial>
+			<origin xyz="0 -0.00286926 -0.02541557" rpy="0 0 0" />
+			<mass value="0.12098061" />
+			<inertia ixx="0.00013405" ixy="0" ixz="0" iyy="6.442E-05" iyz="-7.26E-06" izz="9.875E-05" />
+		</inertial>
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<mesh filename="package://legged_hunter_description/meshes/l_thigh_link.stl" />
+			</geometry>
+			<material name="">
+				<color rgba="0.89804 0.91765 0.92941 1" />
+			</material>
+		</visual>
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<box size="0.001 0.001 0.001" />
+				<!-- <mesh filename="package://legged_hunter_description/meshes/l_thigh_link.stl" /> -->
+			</geometry>
+		</collision>
+	</link>
+	<joint name="leg_l3_joint" type="revolute">
+		<origin xyz="-0.0245 0 -0.0935" rpy="0 0 0" />
+		<parent link="leg_l2_link" />
+		<child link="leg_l3_link" />
+		<axis xyz="0 0 1" />
+		<limit lower="-1.5" upper="1.5" effort="21" velocity="21" />
+	</joint>
+
+	<link name="leg_l4_link">
+		<inertial>
+			<origin xyz="4.686E-05 -0.02435698 -0.06983241" rpy="0 0 0" />
+			<mass value="0.7601909" />
+			<inertia ixx="0.00325687" ixy="-9E-08" ixz="8.91E-06" iyy="0.00327684" iyz="6.4E-07" izz="0.00031685" />
+		</inertial>
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<mesh filename="package://legged_hunter_description/meshes/l_calf_link.stl" />
+			</geometry>
+			<material name="">
+				<color rgba="0.75294 0.75294 0.75294 1" />
+			</material>
+		</visual>
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<box size="0.001 0.001 0.001" />
+				<!-- <mesh filename="package://legged_hunter_description/meshes/l_calf_link.stl" /> -->
+			</geometry>
+		</collision>
+	</link>
+	<joint name="leg_l4_joint" type="revolute">
+		<origin xyz="0 0.0275 -0.046" rpy="0 0 0" />
+		<parent link="leg_l3_link" />
+		<child link="leg_l4_link" />
+		<axis xyz="0 1 0" />
+		<limit lower="-1.0" upper="2.0" effort="21" velocity="21" />
+	</joint>
+
+	<link name="leg_l5_link">
+		<inertial>
+			<origin xyz="0.02577677 -0.02854579 0" rpy="0 0 0" />
+			<mass value="0.1322312" />
+			<inertia ixx="9.848E-05" ixy="-3.56E-06" ixz="0" iyy="7.022E-05" iyz="0" izz="0.00013716" />
+		</inertial>
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<mesh filename="package://legged_hunter_description/meshes/l_ankle_pitch_link.stl" />
+			</geometry>
+			<material name="">
+				<color rgba="0.89804 0.91765 0.92941 1" />
+			</material>
+		</visual>
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<box size="0.001 0.001 0.001" />
+				<!-- <mesh filename="package://legged_hunter_description/meshes/l_ankle_pitch_link.stl" /> -->
+			</geometry>
+		</collision>
+	</link>
+	<joint name="leg_l5_joint" type="revolute">
+		<origin xyz="0 0 -0.14" rpy="0 0 0" />
+		<parent link="leg_l4_link" />
+		<child link="leg_l5_link" />
+		<axis xyz="0 1 0" />
+		<limit lower="-1.0" upper="1.0" effort="21" velocity="21" />
+	</joint>
+
+	<link name="l_ankle_roll_link">
+		<inertial>
+			<origin xyz="0.012583 0.00017854 -0.016891" rpy="0 0 0" />
+			<mass value="0.58347" />
+			<inertia ixx="0.00052164" ixy="-1.83E-06" ixz="-0.00017071" iyy="0.00089826" iyz="-1E-08" izz="0.00070959" />
+		</inertial>
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<mesh filename="package://legged_hunter_description/meshes/l_ankle_roll_link.stl" />
+			</geometry>
+			<material name="">
+				<color rgba="0.89804 0.91765 0.92941 1" />
+			</material>
+		</visual>
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+        <box size="0.001 0.001 0.001" />
+				<!-- <mesh filename="package://legged_hunter_description/meshes/l_ankle_roll_link.stl" /> -->
+			</geometry>
+		</collision>
+	</link>
+	<joint name="leg_l6_joint" type="revolute">
+		<origin xyz="0.051 -0.0275 0" rpy="0 0 0" />
+		<parent link="leg_l5_link" />
+		<child link="l_ankle_roll_link" />
+		<axis xyz="1 0 0" />
+		<limit lower="-1.0" upper="1.0" effort="21" velocity="21" />
+	</joint>
+
+ <joint name="leg_l5_fixed_1" type="fixed">
+    <origin xyz="0.05 0.02 -0.0400" rpy="0 0 0" />
+    <parent link="l_ankle_roll_link" />
+    <child link="leg_l_f1_link" />
+  </joint>
+  <link name="leg_l_f1_link">
+    <inertial>
+      <mass value="0.01" />
+      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001" />
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.001"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.001"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="leg_l5_fixed_2" type="fixed">
+    <origin xyz="0.05 -0.02 -0.0400" rpy="0 0 0" />
+    <parent link="l_ankle_roll_link" />
+    <child link="leg_l_f2_link" />
+  </joint>
+  <link name="leg_l_f2_link">
+    <inertial>
+      <mass value="0.01" />
+      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001" />
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.001"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="-0 0 0"/>
+      <geometry>
+        <sphere radius="0.001"/>
+      </geometry>
+    </collision>
+  </link>	
+
+ <joint name="leg_l5_fixed_3" type="fixed">
+    <origin xyz="-0.07 0.02 -0.0400" rpy="0 0 0" />
+    <parent link="l_ankle_roll_link" />
+    <child link="leg_l_f3_link" />
+  </joint>
+  <link name="leg_l_f3_link">
+    <inertial>
+      <mass value="0.01" />
+      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001" />
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.001"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.001"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="leg_l5_fixed_4" type="fixed">
+    <origin xyz="-0.07 -0.02 -0.0400" rpy="0 0 0" />
+    <parent link="l_ankle_roll_link" />
+    <child link="leg_l_f4_link" />
+  </joint>
+  <link name="leg_l_f4_link">
+    <inertial>
+      <mass value="0.01" />
+      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001" />
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.001"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="-0 0 0"/>
+      <geometry>
+        <sphere radius="0.001"/>
+      </geometry>
+    </collision>
+  </link>		
+
+  <gazebo reference="leg_l1_link">
+    <mu1>0.6</mu1>
+    <mu2>0.6</mu2>
+    <self_collide>1</self_collide>
+  </gazebo>
+  <gazebo reference="leg_l2_link">
+    <mu1>0.6</mu1>
+    <mu2>0.6</mu2>
+    <self_collide>1</self_collide>
+  </gazebo>
+  <gazebo reference="leg_l3_link">
+    <mu1>0.6</mu1>
+    <mu2>0.6</mu2>
+    <self_collide>1</self_collide>
+  </gazebo>
+  <gazebo reference="leg_l4_link">
+    <mu1>0.6</mu1>
+    <mu2>0.6</mu2>
+    <self_collide>1</self_collide>
+  </gazebo>
+  <gazebo reference="leg_l5_link">
+    <mu1>0.6</mu1>
+    <mu2>0.6</mu2>
+    <self_collide>1</self_collide>
+  </gazebo>
+  <gazebo reference="l_ankle_roll_link">
+    <mu1>0.6</mu1>
+    <mu2>0.6</mu2>
+    <self_collide>1</self_collide>
+  </gazebo>
+  <gazebo reference="leg_l_f1_link">
+    <mu1>1.5</mu1>
+    <mu2>1.5</mu2>
+    <self_collide>1</self_collide>
+    <kp value="1000000.0"/>
+    <kd value="100.0"/>
+    <maxVel>1.0</maxVel>
+    <minDepth>0.00</minDepth>
+  </gazebo>
+  <gazebo reference="leg_l_f2_link">
+    <mu1>1.5</mu1>
+    <mu2>1.5</mu2>
+    <self_collide>1</self_collide>
+    <kp value="1000000.0"/>
+    <kd value="100.0"/>
+    <maxVel>1.0</maxVel>
+    <minDepth>0.00</minDepth>
+  </gazebo>
+  <gazebo reference="leg_l_f3_link">
+    <mu1>1.5</mu1>
+    <mu2>1.5</mu2>
+    <self_collide>1</self_collide>
+    <kp value="1000000.0"/>
+    <kd value="100.0"/>
+    <maxVel>1.0</maxVel>
+    <minDepth>0.00</minDepth>
+  </gazebo>
+  <gazebo reference="leg_l_f4_link">
+    <mu1>1.5</mu1>
+    <mu2>1.5</mu2>
+    <self_collide>1</self_collide>
+    <kp value="1000000.0"/>
+    <kd value="100.0"/>
+    <maxVel>1.0</maxVel>
+    <minDepth>0.00</minDepth>
+  </gazebo>
+
+  <transmission name="leg_l1_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="leg_l1_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="leg_l1_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    <maxVelocity>1.484</maxVelocity><!-- 85rpm -->
+	  <maxEffort>36.0</maxEffort><!-- 36Nm -->
+    </actuator>
+  </transmission>
+
+  <transmission name="leg_l2_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="leg_l2_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="leg_l2_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    <maxVelocity>2.6545</maxVelocity><!-- 160rpm -->
+	  <maxEffort>94.0</maxEffort><!-- 94Nm -->
+    </actuator>
+  </transmission>
+
+  <transmission name="leg_l3_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="leg_l3_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="leg_l3_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    <maxVelocity>2.6545</maxVelocity><!-- 160rpm -->
+	  <maxEffort>94.0</maxEffort><!-- 94Nm -->
+    </actuator>
+  </transmission>
+
+  <transmission name="leg_l4_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="leg_l4_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="leg_l4_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    <maxVelocity>1.484</maxVelocity><!-- 85rpm -->
+	<maxEffort>36.0</maxEffort><!-- 36Nm -->
+    </actuator>
+  </transmission>
+
+  <transmission name="leg_l5_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="leg_l5_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="leg_l5_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission> 
+
+  <transmission name="leg_l6_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="leg_l6_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="leg_l6_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission> 
+
+</robot>
